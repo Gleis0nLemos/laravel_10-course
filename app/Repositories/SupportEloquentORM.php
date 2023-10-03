@@ -31,15 +31,13 @@ class SupportEloquentORM implements SupportRepositoryInterface
 
     public function findOne(string $id): stdClass|null
     {
-        $support = $this->model
-                        ->find($id)
-                        ->toArray();
-
+        $support = $this->model->find($id);
+                        
         if(!$support) {
             return null;
         }
 
-        return $support = (object) $support->toArray();
+        return (object) $support->toArray();
     }
 
     public function delete(string $id): void
