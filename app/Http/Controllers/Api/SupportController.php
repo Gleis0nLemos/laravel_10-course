@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\DTOs\Supports\CreateSupportDTO;
+use App\DTOs\Supports\UpdateSupportDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUpdateSupport;
 use App\Http\Resources\SupportResource;
+use App\Models\Support;
 use App\Services\SupportService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -19,9 +21,26 @@ class SupportController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // $supports = Support::paginate();
+        $supports = $this->service->paginate(
+            page: $request->get('page', 1),
+            totalPerPage: $request->get('per_page', 1),
+            filter: $request->filter,
+        );
+
+        return SupportResource::collection($supports->items())
+                                ->additional([
+                                   'meta' => [
+                                       'total' => $supports->total(),
+                                       'is_first_page' => $supports->isFirstPage(),
+                                       'is_last_page' => $supports->isLastPage(),
+                                       'current_page' => $supports->currentPage(),
+                                       'next_page' => $supports->getNumberNextPage(),
+                                       'previous_page' => $supports->getNumberPreviousPage(),
+                                   ]
+                                ]);
     }
 
     /**
@@ -51,9 +70,19 @@ class SupportController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreUpdateSupport $request, string $id)
     {
-        //
+        $support = $this->service->update(
+            UpdateSupportDTO::makeFromRequest($request, $id),
+        );
+
+        if (!$support) {
+            return response()->json([
+                'error' => 'Not found'
+            ]. Response::HTTP_NOT_FOUND);
+        }
+
+        return new SupportResource($support);
     }
 
     /**
