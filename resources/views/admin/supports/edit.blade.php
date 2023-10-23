@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Editar tópico')
+@section('title', 'Editar dúvida {$support->subject}')
 
 @section('header')
 <h1 class="text-lg text-black-500">Dúvida {{ $support->subject }}</h1>
