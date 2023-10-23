@@ -9,11 +9,12 @@
 </head>
 
 <body>
-    <section class="container px-4 mx-auto">
+    <section class="container px-4 mx-auto py-4">
 
         @yield('header')
 
         <div>
+            <x-messages />
             @yield('content')
         </div>
 
